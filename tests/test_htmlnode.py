@@ -1,6 +1,7 @@
 import unittest
 
 from src.htmlnode import HTMLNode, LeafNode, ParentNode
+from helpers.markdown_html import markdown_to_html_node
 
 
 class TestTextNode(unittest.TestCase):
@@ -33,7 +34,8 @@ class TestTextNode(unittest.TestCase):
         )
         expected = "<p><b>Bold text</b>Normal text<i>italic text</i>Normal text</p>"
         self.assertEqual(node.to_html(), expected)
-                
+        
+                    
 
 if __name__ == "__main__":
     unittest.main()
