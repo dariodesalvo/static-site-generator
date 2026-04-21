@@ -2,7 +2,8 @@ from helpers.block_functions import BlockType, markdown_to_blocks, block_to_bloc
 from src.htmlnode import ParentNode, LeafNode
 from src.textnode import text_node_to_html_node 
 from helpers.helper import text_to_textnodes
-
+import re
+import os
 
 def text_to_children(text):
     text_nodes = text_to_textnodes(text)
@@ -84,3 +85,39 @@ def markdown_to_html_node(markdown):
         block_nodes.append(node)
         
     return ParentNode("div", block_nodes)
+
+def extract_title(markdown):
+    re_h1 = r"^#\s+(.+)$"
+    
+    match = re.search(re_h1, markdown, re.MULTILINE)
+    
+    if not match:
+        raise Exception("No se encontraron títulos")
+    
+    return match.group(1).strip()
+
+def generate_page(from_path, template_path, dest_path):
+    
+    print(f'Generating page from {from_path} to {dest_path} using {template_path}')
+    
+    source_path = os.path.abspath(from_path)
+    with open(source_path, encoding="utf-8") as f:
+        md = f.read()
+
+    template_path_abs = os.path.abspath(template_path)
+    with open(template_path_abs, encoding="utf-8") as t:
+        template = t.read()
+    
+    content = markdown_to_html_node(md).to_html()
+    
+    title = extract_title(md)
+    
+    template = template.replace('{{ Title }}', title)
+    template = template.replace('{{ Content }}', content)
+    
+    dest_dir = os.path.dirname(dest_path)
+    if dest_dir != "":
+        os.makedirs(dest_dir, exist_ok=True)
+    
+    with open(dest_path, "w", encoding="utf-8") as f:
+        f.write(template)
