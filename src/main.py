@@ -17,7 +17,8 @@ def main():
 
     if os.path.exists(dir_path_docs):
         shutil.rmtree(dir_path_docs)
-    
+    os.makedirs(dir_path_docs)
+
     copy_files(dir_path_static, dir_path_docs)
     
     generate_pages_recursive(dir_path_content, template_path, dir_path_docs, basepath)
